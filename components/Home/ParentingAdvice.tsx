@@ -1,15 +1,16 @@
 import { screenWidth } from "@/constants/ScreenDimensions";
-import { LinearGradient } from "expo-linear-gradient";
+import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useRef } from "react";
 import {
   Animated,
+  Easing,
   StyleSheet,
   Text,
-  TouchableOpacity,
-  View,
+  TextInput,
+  View
 } from "react-native";
-import SearchInputField from "../ui/SearchInputField";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Button } from "../ui/Button";
 
 interface ParentingAdviceProps {
   chatMode: boolean;
@@ -28,8 +29,9 @@ const ParentingAdvice: React.FC<ParentingAdviceProps> = ({
   /** run once when chatMode switches */
   useEffect(() => {
     Animated.timing(slideY, {
-      toValue: chatMode ? -180 : 0, // 180 ≈ distance to Header bottom
+      toValue: chatMode ? -180 : 0,
       duration: 300,
+      easing: Easing.out(Easing.ease),
       useNativeDriver: true,
     }).start();
   }, [chatMode]);
@@ -53,27 +55,26 @@ const ParentingAdvice: React.FC<ParentingAdviceProps> = ({
       <Text style={styles.title}>Ask your companion</Text>
       <Text style={styles.subtitle}>Get personalized advice</Text>
 
-      <SearchInputField
-        materialIconName="chat-bubble-outline"
-        placeholder="How can I help you today?"
-        backgroundColor="#F9FAFB"
-        marginTop={-2}
-        inputProps={{
-          onFocus: onFocus, // slide up & hide other blocks
-          onBlur: onBlur, // slide back & show everything
-        }}
-      />
+      <View style={styles.searchBar}>
+        <Ionicons
+          name="chatbubble-outline"
+          size={20}
+          color="#4A90E2"
+          style={styles.searchIcon}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="How can I help you today?"
+          placeholderTextColor="#6B7280"
+          onFocus={onFocus}
+          onBlur={onBlur}
+        />
+      </View>
 
-      <TouchableOpacity style={styles.button}>
-        <LinearGradient
-          colors={["#3B82F6", "#8B5CF6"]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={styles.gradientButton}
-        >
-          <Text style={styles.buttonText}>Get Parenting Advice</Text>
-        </LinearGradient>
-      </TouchableOpacity>
+      <Button
+        onPress={() => console.log("Parenting adice")}
+        text="Get Parenting Advice"
+      />
     </Animated.View>
   );
 };
@@ -104,19 +105,21 @@ const styles = StyleSheet.create({
     fontWeight: 300,
     marginBottom: 16,
   },
-  button: {
-    borderRadius: 16,
-    overflow: "hidden",
-    marginTop: 16,
-  },
-  gradientButton: {
-    paddingVertical: 14,
+  searchBar: {
+    flexDirection: "row",
     borderRadius: 30,
     alignItems: "center",
+    paddingHorizontal: 15,
+    height: 45,
+    backgroundColor: "#F9FAFB",
+    marginTop: -2,
   },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "600",
+  searchIcon: {
+    marginRight: 10,
+  },
+  input: {
+    flex: 1,
     fontSize: 16,
+    color: "#333",
   },
 });

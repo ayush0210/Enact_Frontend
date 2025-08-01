@@ -1,17 +1,15 @@
-import { MaterialIcons } from "@expo/vector-icons";
+import { screenWidth } from "@/constants/ScreenDimensions";
+import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import { Link } from "expo-router";
 import React from "react";
 import {
   Dimensions,
   StyleSheet,
   Text,
-  TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import SearchInputField from "../ui/SearchInputField";
-
-const screenWidth = Dimensions.get("window").width;
 
 const Header = () => {
   const insets = useSafeAreaInsets();
@@ -29,17 +27,26 @@ const Header = () => {
           <Text style={styles.subtitle}>Your trusted Parenting Companion</Text>
         </View>
 
-        <TouchableOpacity style={styles.saveIcon}>
-          <MaterialIcons name="bookmark" size={24} color={"#3B82F6"} />
-        </TouchableOpacity>
+        <Link href={"/(location)/location?tab=saved"}>
+          <View style={styles.saveIcon}>
+            <Ionicons name="bookmark" size={22} color={"#3B82F6"} />
+          </View>
+        </Link>
       </View>
 
-      <SearchInputField
-        materialIconName="add-location-alt"
-        placeholder="Find nearby locations..."
-        backgroundColor="#FFF"
-        marginTop={20}
-      />
+      <View style={{ marginTop: 20 }}>
+        <Link href={"/(location)/location?tab=search"}>
+          <View style={styles.searchBar}>
+            <Ionicons
+              name="location-outline"
+              size={20}
+              color="#4A90E2"
+              style={styles.searchIcon}
+            />
+            <Text style={styles.input}>Find nearby locations...</Text>
+          </View>
+        </Link>
+      </View>
     </LinearGradient>
   );
 };
@@ -82,7 +89,6 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     alignItems: "center",
     paddingHorizontal: 15,
-    marginTop: 20,
     height: 45,
   },
   searchIcon: {
@@ -91,6 +97,6 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 16,
-    color: "#333",
+    color: "#6B7280",
   },
 });

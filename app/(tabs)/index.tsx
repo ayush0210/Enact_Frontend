@@ -1,31 +1,31 @@
-import Header from "@/components/Home/Header";
-import { LinearGradient } from "expo-linear-gradient";
-import Toast from "react-native-toast-message";
 import ContentPreferences from "@/components/Home/ContentPreferences";
+import Header from "@/components/Home/Header";
 import ParentingAdvice from "@/components/Home/ParentingAdvice";
-import { useEffect, useRef, useState } from "react";
 import {
-  Animated,
-  Keyboard,
-  LayoutAnimation,
-  Pressable,
-  ViewStyle,
-} from "react-native";
+  LocationContext,
+  LocationContextType,
+} from "@/context/LocationContext";
+import { useLocationCache } from "@/controllers/locationCacheController";
+import { LinearGradient } from "expo-linear-gradient";
+import { useContext, useEffect, useRef, useState } from "react";
+import { Animated, Keyboard, Pressable, ViewStyle } from "react-native";
+import Toast from "react-native-toast-message";
 
 export default function HomeScreen() {
+  const { loadCachedDataFirst, getQuickLocation, improveLocationInBackground } =
+    useLocationCache();
+  const { refreshDataInBackground } =
+    useContext<LocationContextType>(LocationContext);
   const [chatMode, setChatMode] = useState(false);
 
-  // drives opacity + translateY for the grid
   const gridAnim = useRef(new Animated.Value(0)).current; // 0 = visible
 
   const enterChat = () => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setChatMode(true);
   };
 
   const leaveChat = () => {
     Keyboard.dismiss();
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setChatMode(false);
   };
 
@@ -50,6 +50,63 @@ export default function HomeScreen() {
       },
     ],
   };
+
+  // Startup initialization useEffect
+  useEffect(() => {
+    let mounted = true;
+
+    const startupSequence = async () => {
+      console.log("=== FAST STARTUP SEQUENCE BEGIN ===");
+
+      try {
+        await loadCachedDataFirst();
+
+        const quickLocation = await getQuickLocation();
+
+        if (mounted) {
+          console.log("Quick location set:", quickLocation);
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        console.log("Starting background operations...");
+
+        Promise.allSettled([
+          improveLocationInBackground(),
+          refreshDataInBackground(),
+        ]).then(() => {
+          if (mounted) {
+            console.log("Background operations completed");
+          }
+        });
+      } catch (error) {
+        console.error("Startup sequence error:", error);
+      }
+
+      console.log("=== FAST STARTUP SEQUENCE END ===");
+    };
+
+    startupSequence();
+
+    // return () => {
+    //   mounted = false;
+
+    //   // Cleanup voice and sound
+    //   Voice.destroy().then(Voice.removeAllListeners);
+    //   if (currentSound.current) {
+    //     currentSound.current.stop();
+    //     currentSound.current.release();
+    //     currentSound.current = null;
+    //   }
+    //   setIsPlaying(false);
+    //   setActiveAudioIndex(null);
+    // };
+  }, [
+    getQuickLocation,
+    loadCachedDataFirst,
+    improveLocationInBackground,
+    refreshDataInBackground,
+  ]);
 
   return (
     <LinearGradient
