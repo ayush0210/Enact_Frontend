@@ -1,30 +1,52 @@
-import { Image } from "expo-image";
-import { Platform, StyleSheet, Text, View } from "react-native";
-
-import { Collapsible } from "@/components/Collapsible";
-import { ExternalLink } from "@/components/ExternalLink";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { IconSymbol } from "@/components/ui/IconSymbol";
+import Account from "@/components/Settings/Account";
+import App from "@/components/Settings/App";
+import Tips from "@/components/Settings/Tips";
+import { GradientBackground } from "@/components/ui/GradientBackground";
+import { screenWidth } from "@/constants/ScreenDimensions";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function SettingsScreen() {
+  const insets = useSafeAreaInsets();
   return (
-    <View>
-      <Text>Settings</Text>
-    </View>
+    <GradientBackground>
+      <View
+        style={{
+          marginTop: insets.top + 5,
+          paddingHorizontal: 0.05 * screenWidth,
+        }}
+      >
+        <View style={styles.header}>
+          <Text style={styles.title}>Settings</Text>
+        </View>
+
+        <View style={styles.border} />
+
+        <ScrollView>
+          <Account />
+
+          <App />
+
+          <Tips />
+        </ScrollView>
+      </View>
+    </GradientBackground>
   );
 }
-
 const styles = StyleSheet.create({
-  headerImage: {
-    color: "#808080",
-    bottom: -90,
-    left: -35,
-    position: "absolute",
-  },
-  titleContainer: {
+  header: {
     flexDirection: "row",
-    gap: 8,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  border: {
+    borderBottomColor: "rgba(255, 255, 255, 0.8)",
+    borderBottomWidth: 1,
+    marginVertical: 20,
+  },
+  title: {
+    color: "#fff",
+    fontSize: 22,
+    fontWeight: "bold",
   },
 });

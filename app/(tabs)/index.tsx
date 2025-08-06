@@ -18,6 +18,7 @@ export default function HomeScreen() {
     useContext<LocationContextType>(LocationContext);
   const [chatMode, setChatMode] = useState(false);
 
+  // drives opacity + translateY for the grid
   const gridAnim = useRef(new Animated.Value(0)).current; // 0 = visible
 
   const enterChat = () => {
